@@ -1,0 +1,20 @@
+- hosts: kms_control
+  become: yes
+  gather_facts: True
+  tasks:
+    - name: Create group for the control component.
+      group:
+        name: "{{ component_group }}"
+        gid: "3001"
+        state: present
+
+    - name: Create user for the control component.
+      user:
+        name: "{{ component_user }}"
+        uid: "2004"
+        group: "{{ component_group }}"
+        state: present
+
+    - name: Instll kms control component
+      include_role:
+        name:  kms

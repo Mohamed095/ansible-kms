@@ -1,0 +1,116 @@
+#!/bin/bash
+
+#nom du service que nous allons créer (en général c'est le nom du script)
+SERVICE_NAME={{ component_name }}
+#chemin du fichier .pid que créera le service à chaque fois qu'il est lancé et qui le supprimera à chaque fois qu'il est stopé
+PATH_TO_PID={{ component_run_folder }}/$SERVICE_NAME.pid
+#chemin qui contient l'executable à installer
+PATH_TO_DIRECTORY={{ component_usr_folder }}
+#chemin vers le fichier de configuration
+PATH_TO_CONFIG={{ component_etc_folder }}
+#chemin vers le fichier logback.xml
+PATH_TO_LOGBACK={{ component_etc_folder }}/{{ component_log4j2_file }}
+#nom de l'executable (à utiliser avec le grep)
+PROCESS_NAME={{ component_name }}
+#nom de l'executable à installer
+JAR_NAME={{ component_jar }}
+#parametres à ajouter pour lancer correctement l'executable (si pas besoin, alors laisser vide)
+
+PARAMS_TO_ADD_TO_RUN_JAR="--logging.config=$PATH_TO_LOGBACK --spring.config.location=$PATH_TO_CONFIG/{{ component_properties_file }}"
+#parametres qui concernent la JVM
+MEMORY="-Xms64m -Xmx4096m "
+#si rempli, l'executable sera lancé par cet utilisateur sinon c'est l'utilisateur courant qui le lancera 
+SERVICE_USER=
+
+function run_application(){
+        if [[ ! -n $SERVICE_USER ]]; then
+                nohup java \-jar $PATH_TO_DIRECTORY/$JAR_NAME $MEMORY $PARAMS_TO_ADD_TO_RUN_JAR &
+	        echo "$!" > $PATH_TO_PID
+        else
+                su $SERVICE_USER -c "nohup java \-jar $PATH_TO_DIRECTORY/$JAR_NAME $MEMORY $PARAMS_TO_ADD_TO_RUN_JAR &"
+                su $SERVICE_USER -c "echo $! > PATH_TO_PID"
+        fi
+}
+
+
+
+function remove_file(){
+	if [[ ! -n $SERVICE_USER ]]; then 
+		rm -f $PATH_TO_PID
+	else
+		su $SERVICE_USER -c "rm -f $PATH_TO_PID"
+	fi
+}
+
+function kill_process(){
+	if [[ ! -n $SERVICE_USER ]]; then 
+		kill -15 $PID_FROM_FILE
+	else
+		su $SERVICE_USER -c "kill -15 $PID_FROM_FILE"
+	fi
+}
+
+case $1 in
+start)
+if [[ -f $PATH_TO_PID ]]; then
+	PID=$(<$PATH_TO_PID)
+	echo "pid: $PID"
+	if [[ ! -n "$PID" ]]; then
+		echo "no pid found!"	
+		run_application
+		echo "Service started..."
+		exit 0
+	fi 
+	if [[ -n "ps -f -p $PID" ]]; then
+			echo "service is already running"
+	else  
+		run_application
+		echo "Service started..."
+		exit 0
+	fi
+
+else
+	run_application
+	echo "Service started..."
+	exit 0
+fi
+;;
+
+stop) 
+if [[ ! -f $PATH_TO_PID ]]; then
+	echo "corresponding PID file not found!"
+	exit 0
+fi
+PID_FROM_FILE=$(<$PATH_TO_PID)
+if [[ ! -n "$PID_FROM_FILE" ]]; then
+	echo "no pid found!"
+	exit 0
+fi
+if [[ ! -n "ps -f -p $PID_FROM_FILE" ]]; then
+	echo "no corresponding process for this PID"
+	remove_file
+	exit 0
+fi 
+kill_process
+remove_file
+;;
+
+status)
+if [[ ! -f $PATH_TO_PID ]]; then
+	echo "corresponding PID file not found!"
+	echo "service is not running"
+	exit 0
+fi
+PID_FROM_FILE=$(<$PATH_TO_PID)
+if [[ ! -n "PID_FROM_FILE" ]]; then
+	echo "no pid found!"
+	echo "service is not running"
+	exit 0
+fi 
+if [[  -n "ps -f -p $PID_FROM_FILE" ]]; then 
+	echo "service is running"
+else
+	echo "service is not running"
+fi
+;;
+esac

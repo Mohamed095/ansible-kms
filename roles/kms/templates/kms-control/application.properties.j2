@@ -1,0 +1,24 @@
+# Server Tomcat
+server.port={{ kms_control_server_port }}
+
+# Database POSTGRESQL for INTEGRATION PLATFORM 
+spring.jpa.show-sql=true
+spring.datasource.url=jdbc:postgresql://{{ component_db_host }}:{{ component_db_host_port }}/{{ component_db }}
+spring.datasource.username={{ component_db_user }}
+spring.datasource.password={{ component_db_password }}
+
+# The SQL dialect makes Hibernate generate better SQL for the chosen database
+spring.jpa.properties.hibernate.dialect = org.hibernate.dialect.PostgreSQLDialect
+
+# Hibernate ddl auto (create, create-drop, validate, update)
+spring.jpa.hibernate.ddl-auto = update
+
+# avoid contextual LOB creation as createClob() method threw error
+spring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation=true
+
+# Configuration SSM
+# Full path file name
+# samples : C:\\temp\\fro\\resources\\ssm-dev.json
+#           C:/temp/fro/resources/ssm-dev.json
+ssm.file={{ component_etc_folder }}/{{ kms_control_ssm_file }}
+

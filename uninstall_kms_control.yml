@@ -1,0 +1,21 @@
+- hosts: kms_control
+  become: yes
+  gather_facts: True
+  tasks:
+    - name: Stop service, if running
+      systemd:
+        state: stopped
+        name: "{{ component_name}}"
+
+    - name: Create  directories
+      file:
+        path: "{{ item }}"
+        state: directory
+        owner: "{{ component_user }}"
+        group: "{{ component_group }}"
+        mode: 0700
+      with_items: 
+        - "{{ component_usr_folder }}"
+        - "{{ component_run_folder }}"
+        - "{{ component_log_folder }}"
+        - "{{ component_etc_folder }}"

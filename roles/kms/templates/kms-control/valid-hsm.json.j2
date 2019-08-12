@@ -1,0 +1,195 @@
+{
+  "creationInfo": "UUID: 82dacfa1-a14c-4cd6-8331-37b76593cc1e , exported on host: RMM-P2100047PW/172.30.13.166, filename: valid-hsm.json",
+  "version": 148,
+  "rawHsms": [
+    {
+      "id": 292,
+      "name": "VALID-HSM-1",
+      "type": "ASM8.1a",
+      "description": "",
+      "host": {{ hsm_host }},
+      "port": {{ hsm_port }},
+      "moduleId": 0,
+      "secure": false,
+      "state": {
+        "stateValue": 1
+      },
+      "protocol": "KS"
+    }
+  ],
+  "rawLabels": [
+    {
+      "id": 2,
+      "name": "CERT-SS1-ROOT-CA",
+      "kek": false,
+      "mappings": []
+    },
+    {
+      "id": 3,
+      "name": "CERT-SS2-ROOT-CA",
+      "kek": false,
+      "mappings": []
+    },
+    {
+      "id": 4,
+      "name": "EN_DEVICE_KEY",
+      "kek": false,
+      "mappings": [
+        {
+          "hsmId": 292,
+          "keyAddress": "EN_DEVICE_KEY",
+          "enabled": true
+        }
+       ]
+    },
+    {
+      "id": 5,
+      "name": "EN_IMP_KEK",
+      "kek": false,
+      "mappings": [
+        {
+          "hsmId": 292,
+          "keyAddress": "EN_IMP_KEK",
+          "enabled": true
+        }
+       ]
+    },
+    {
+      "id": 6,
+      "name": "EN_IMP_WK",
+      "kek": false,
+      "mappings": [
+        {
+          "hsmId": 292,
+          "keyAddress": "EN_IMP_WK",
+          "enabled": true
+        }      ]
+    },
+    {
+      "id": 7,
+      "name": "EN_IMP_WKEXP",
+      "kek": false,
+      "mappings": [
+        {
+          "hsmId": 292,
+          "keyAddress": "EN_IMP_WKEXP",
+          "enabled": true
+        }      ]
+    },
+    {
+      "id": 8,
+      "name": "EN_STORAGE",
+      "kek": false,
+      "mappings": [
+        {
+          "hsmId": 292,
+          "keyAddress": "EN_STORAGE",
+          "enabled": true
+        }      ]
+    },
+    {
+      "id": 9,
+      "name": "KEY-SS1-OWN-KA",
+      "kek": false,
+      "mappings": []
+    },
+    {
+      "id": 10,
+      "name": "KEY-SS1-OWN-SIG",
+      "kek": false,
+      "mappings": []
+    },
+    {
+      "id": 11,
+      "name": "KEY-SS2-OWN-KA",
+      "kek": false,
+      "mappings": []
+    },
+    {
+      "id": 12,
+      "name": "KEY-SS2-OWN-SIG",
+      "kek": false,
+      "mappings": []
+    },
+    {
+      "id": 13,
+      "name": "KEY-SS2-USER-SIG",
+      "kek": false,
+      "mappings": []
+    },
+    {
+      "id": 22,
+      "name": "EN_CONFI_DC",
+      "kek": false,
+      "mappings": [
+        {
+          "hsmId": 292,
+          "keyAddress": "EN_CONFI_DC",
+          "enabled": true
+        }      ]
+    },
+    {
+      "id": 23,
+      "name": "EN_SEC_WK_CUST",
+      "kek": false,
+      "mappings": [
+        {
+          "hsmId": 292,
+          "keyAddress": "EN_SEC_WK_CUST",
+          "enabled": true
+        }      ]
+    },
+    {
+      "id": 24,
+      "name": "EN_SEC_WK_EXP_PR",
+      "kek": false,
+      "mappings": [
+        {
+          "hsmId": 292,
+          "keyAddress": "EN_SEC_WK_EXP_PR",
+          "enabled": true
+        }
+      ]
+    },
+    {
+      "id": 25,
+      "name": "EN_STORAGE_WK_DC",
+      "kek": false,
+      "mappings": [
+        {
+          "hsmId": 292,
+          "keyAddress": "EN_STORAGE_WK_DC",
+          "enabled": true
+        }      ]
+    },
+    {
+      "id": 26,
+      "name": "EN_TRANS_EXP_CUS",
+      "kek": false,
+      "mappings": [
+        {
+          "hsmId": 292,
+          "keyAddress": "EN_TRANS_EXP_CUS",
+          "enabled": true
+        }      ]
+    },
+    {
+      "id": 27,
+      "name": "EN_TRANS_EXP_DEV",
+      "kek": false,
+      "mappings": [
+        {
+          "hsmId": 292,
+          "keyAddress": "EN_TRANS_EXP_DEV",
+          "enabled": true
+        }      ]
+    }
+  ],
+  "rawFunctionTimeouts": [
+    {
+      "functionName": "default_function_timeout",
+      "timeoutMillis": 500
+    }
+  ],
+  "rawRoutingEngineRules": []
+}

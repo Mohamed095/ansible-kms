@@ -1,0 +1,155 @@
+---
+
+- name: Create  directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ component_user }}"
+    group: "{{ component_group }}"
+    mode: 0700
+  with_items: 
+    - "{{ component_usr_folder }}"
+    - "{{ component_run_folder }}"
+    - "{{ component_log_folder }}"
+    - "{{ component_etc_folder }}"
+
+- name: Create xsd directory for kms-import
+  file:
+    path: "{{ kms_import_xsd }}"
+    state: directory
+    owner: "{{ component_user }}"
+    group: "{{ component_group }}"
+    mode: 0700
+  when: component_name == "kms-import"  
+  
+- name: Run my module
+  become: yes
+  get_checksum:
+    raw: "{{ raw_name }}"
+    repo: "{{ component_module_name }}/{{ component_name }}"
+    option: bin
+    version: "{{ component_version}}"
+    address: "{{ nexus_ip }}"
+    hash_type: sha1
+  register: result
+
+
+- name: Download the kms component 
+  get_url:
+    url: "{{ component_url_repository }}/{{ component_version }}/{{ component_tar_gz }}"
+    dest: "/tmp/"
+    checksum: "sha1:{{result.msg }}"
+    owner: "{{ component_user }}"
+    group: "{{ component_group }}"
+
+
+- name: Unarchive the Downloaded component
+  unarchive:
+    remote_src: yes
+    src: "/tmp/{{ component_tar_gz }}"
+    dest: "/tmp"
+    owner: "{{ component_user }}"
+    group: "{{ component_group }}"
+
+
+#- name: Copies files 
+#  copy:
+#   remote_src: yes
+#    src:  "/tmp/{{ item.src }}"
+#    dest: "{{ item.dest }}"
+#  loop:
+#   - {src: '{{ component_name }}-{{ component_version}}/bin/', dest: '{{ component_usr_folder }}'}
+#   - {src: '{{ component_name }}-{{ component_version}}/lib/', dest: '{{ component_usr_folder }}'}
+#   - {src: '{{ component_name }}-{{ component_version}}/conf/', dest: '{{ component_etc_folder }}'}
+#   - {src: '{{ component_name }}-{{ component_version}}/service/', dest: '{{ systemd_path }}'}
+
+
+- name: copy 1 bin
+  copy:
+    remote_src: yes
+    src:  "/tmp/{{ component_name }}-{{ component_version}}/bin/"
+    dest: "{{ component_usr_folder }}"
+  delegate_to: "{{ inventory_hostname }}"
+
+- name: copy 2 lib
+  copy:
+    remote_src: yes
+    src:  "/tmp/{{ component_name }}-{{ component_version}}/lib/"
+    dest: "{{ component_usr_folder }}"
+  delegate_to: "{{ inventory_hostname }}"
+
+- name: copy 3 conf
+  copy:
+    remote_src: yes
+    src:  "/tmp/{{ component_name }}-{{ component_version}}/conf/"
+    dest: "{{ component_etc_folder }}"
+  delegate_to: "{{ inventory_hostname }}"
+
+- name: copy 4 service
+  copy:
+    remote_src: yes
+    src:  "/tmp/{{ component_name }}-{{ component_version}}/service/"
+    dest: "{{ systemd_path }}"
+  delegate_to: "{{ inventory_hostname }}"
+
+ 
+
+- name: copy xsd file for kms-import 
+  copy:
+    remote_src: yes
+    src:  "/tmp/{{ component_name }}-{{ component_version}}/xsd/"
+    dest: "{{ kms_import_xsd }}"
+  when: component_name == "kms-import"   
+
+
+- name: Copy template of properties
+  template:
+    src: "{{ component_name }}/{{ component_properties_template_file }}"
+    dest: "{{ component_etc_folder }}/{{ component_properties_file }}"
+    owner: "{{ component_user }}"
+    group: "{{ component_group }}"
+
+- name: Copy template of ssm file for kms-control
+  template:
+    src: "{{ component_name }}/{{ kms_control_ssm_template_file }}"
+    dest: "{{ component_etc_folder }}/{{ kms_control_ssm_file }}"
+    owner: "{{ component_user }}"
+    group: "{{ component_group }}"
+  when: component_name == "kms-control"
+
+- name: Copy template of log4j2 
+  template:
+    src: "{{ component_name }}/{{ component_log4j2_template_file }}"
+    dest: "{{ component_etc_folder }}/{{ component_log4j2_file }}"
+    owner: "{{ component_user }}"
+    group: "{{ component_group }}"
+
+- name: Copy template of sh script
+  template:
+    src: "{{ component_name }}/{{ component_script_template_file }}"
+    dest: "{{ component_usr_folder }}/{{ component_script_file }}"
+    owner: "{{ component_user }}"
+    group: "{{ component_group }}"
+    mode: "a+x"
+
+- name: Copy template of config file for kms-import
+  template:
+    src: "{{ component_name }}/{{ kms_import_config_template_file }}"
+    dest: "{{ component_etc_folder }}/{{ kms_import_config_file }}"
+    owner: "{{ component_user }}"
+    group: "{{ component_group }}"
+  when: component_name == "kms-import" 
+
+- name: Copy template of service file
+  template:
+    src: "{{ component_name }}/{{ component_service_template_file }}"
+    dest: "{{ systemd_path }}/{{ component_service_file }}"
+    owner: root
+    group: root
+
+- name: Reload systemd
+  systemd:
+    daemon-reload: yes
+    enabled: yes
+    state: started
+    name: "{{ component_name}}"

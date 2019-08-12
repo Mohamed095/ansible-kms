@@ -1,0 +1,20 @@
+[Unit]
+Description=script to launch {{ component_name }}
+
+[Service]
+Type=forking
+#PrivateTmp=yes
+User={{ component_user }}
+Group={{ component_group }}
+# Run ExecStartPre with root-permissions
+PermissionsStartOnly=true
+ExecStartPre=/usr/bin/chown -R {{ component_user }}:{{ component_group }} {{ component_run_folder }}
+# Run ExecStart with User={{ component_user }} / Group={{ component_group }} 
+ExecStart={{ component_usr_folder }}/{{ component_script_file }} start -P {{ component_run_folder }}/{{ component_name }}.pid
+#stop command from .sh script
+ExecStop={{ component_usr_folder }}/{{ component_script_file }} stop
+PIDFile={{ component_run_folder }}/{{ component_name }}.pid
+
+[Install]
+Alias={{ component_name }}
+WantedBy=default.target

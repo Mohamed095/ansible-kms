@@ -1,0 +1,34 @@
+# Server Tomcat
+server.port={{ kms_import_server_port }}
+
+#support shipment file of 200 MB
+spring.servlet.multipart.max-file-size=200MB
+spring.servlet.multipart.max-request-size=200MB
+spring.http.multipart.max-file-size=200MB
+spring.http.multipart.max-request-size=200MB
+multipart.max-file-size=200MB
+multipart.max-request-size=200MB
+server.tomcat.max-file-size=200000000
+
+# Database POSTGRESQL for DEVELOPEMENT PLATFORM
+spring.jmx.default-domain=kms
+spring.datasource.url=jdbc:postgresql://{{ component_db_host }}:{{ component_db_host_port }}/{{ component_db }} 
+spring.datasource.username={{ component_db_user }}
+spring.datasource.password={{ component_db_password }}
+
+# The SQL dialect makes Hibernate generate better SQL for the chosen database
+spring.jpa.properties.hibernate.dialect = org.hibernate.dialect.PostgreSQLDialect
+
+# Hibernate ddl auto (create, create-drop, validate, update)
+spring.jpa.hibernate.ddl-auto = update
+spring.jpa.show-sql=false
+
+# URL kms control api
+kms.control.url=http://{{ kms_control_host }}:{{ kms_control_server_port }}/api/v1
+
+# external application properties
+kms.import.enable.verifSignatureX509={{ kms_import_enable_verifSignatureX509 }}
+
+# Use "*" to expose all endpoints, or a comma-separated list to expose selected ones 
+management.endpoints.web.exposure.include=*
+management.endpoint.health.show-details=always

@@ -1,0 +1,23 @@
+---
+- name: Stop service, if running
+  systemd:
+    state: stopped
+    enabled: no
+    name: "{{ component_name}}"
+
+- name: Create  directories
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items: 
+    - "{{ component_usr_folder }}"
+    - "{{ component_run_folder }}"
+    - "{{ component_log_folder }}"
+    - "{{ component_etc_folder }}"
+    - "{{ systemd_path }}/{{ component_service_file }}"
+
+- name: reload systemd configuration
+  become: yes
+  command: systemctl daemon-reload
+
+    

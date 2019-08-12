@@ -1,0 +1,5 @@
+- hosts: kms_import
+  remote_user: root
+  roles:
+    - kms
+
